@@ -1,3 +1,8 @@
+
+
+![icon](https://github.com/user-attachments/assets/36552f95-685b-4ab7-be36-7c428c5dae94)
+
+
 # ⚔️ StickFight J2ME — Complete Source
 
 Stickman combat game for **Itel 5615 (240×320)** built on **J2ME MIDP 2.0 / CLDC 1.1**.  
