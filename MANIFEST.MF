@@ -1,0 +1,7 @@
+MIDlet-1: StickFight,/icon.png,StickFightMIDlet
+MIDlet-Description: StickFight v2.0 PRO MAX - 12 weapons, survival, pixel-art
+MIDlet-Name: StickFight PRO MAX
+MIDlet-Vendor: David
+MIDlet-Version: 2.0.0
+MicroEdition-Configuration: CLDC-1.1
+MicroEdition-Profile: MIDP-2.0

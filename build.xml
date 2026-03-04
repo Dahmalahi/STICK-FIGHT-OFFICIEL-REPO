@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  StickFight v2.0 PRO MAX — Ant Build Script
+  ===========================================
+  Requirements:
+    Apache Ant + Sun WTK 2.5.2 (set WTK_HOME below)
+    JDK 8 or older (javac -target 1.1 needed for CLDC)
+
+  ant build  →  StickFight.jar + StickFight.jad
+  ant run    →  launch in MicroEmulator (must have microemulator.jar in lib/)
+  ant clean  →  remove build artefacts
+-->
+<project name="StickFight" default="build" basedir=".">
+
+  <!-- ── Adjust this path ─────────────────────────────────────────── -->
+  <property name="wtk.home"   value="/opt/WTK2.5.2"/>
+  <!-- ─────────────────────────────────────────────────────────────── -->
+
+  <property name="cldc.jar"   value="${wtk.home}/lib/cldcapi11.jar"/>
+  <property name="midp.jar"   value="${wtk.home}/lib/midpapi20.jar"/>
+  <property name="preverify"  value="${wtk.home}/bin/preverify"/>
+  <property name="src.dir"    value="src"/>
+  <property name="build.dir"  value="build"/>
+  <property name="prev.dir"   value="build/preverified"/>
+  <property name="jar.name"   value="StickFight.jar"/>
+  <property name="jad.name"   value="StickFight.jad"/>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete file="${jar.name}"/>
+  </target>
+
+  <target name="compile" depends="clean">
+    <mkdir dir="${build.dir}/classes"/>
+    <javac srcdir="${src.dir}" destdir="${build.dir}/classes"
+           source="1.3" target="1.1"
+           bootclasspath="${cldc.jar}:${midp.jar}"
+           classpath="${cldc.jar}:${midp.jar}"
+           debug="false" optimize="true"/>
+  </target>
+
+  <target name="preverify" depends="compile">
+    <mkdir dir="${prev.dir}"/>
+    <exec executable="${preverify}">
+      <arg value="-classpath"/><arg value="${cldc.jar}:${midp.jar}"/>
+      <arg value="-d"/>        <arg value="${prev.dir}"/>
+      <arg value="${build.dir}/classes"/>
+    </exec>
+  </target>
+
+  <target name="jar" depends="preverify">
+    <jar destfile="${jar.name}" manifest="META-INF/MANIFEST.MF">
+      <fileset dir="${prev.dir}" includes="**/*.class"/>
+    </jar>
+    <length file="${jar.name}" property="jar.size"/>
+    <replaceregexp file="${jad.name}"
+      match="MIDlet-Jar-Size:.*"
+      replace="MIDlet-Jar-Size: ${jar.size}"
+      byline="true"/>
+    <echo message="✅  StickFight.jar → ${jar.size} bytes"/>
+  </target>
+
+  <target name="build" depends="jar"/>
+
+  <!-- Run in MicroEmulator (download microemulator-2.0.4.jar to lib/) -->
+  <target name="run" depends="build">
+    <java jar="lib/microemulator.jar" fork="true">
+      <arg value="--device"/>
+      <arg value="240x320"/>
+      <arg value="${jar.name}"/>
+    </java>
+  </target>
+
+</project>
